@@ -8,10 +8,9 @@ import dropbox_service
 
 app = Flask(__name__)
 
-TOKEN = ''
-with open('token.txt', 'r')as f:
-    global TOKEN
-    TOKEN = f.read()
+tokenFile = open('token.txt', 'r')
+TOKEN = tokenFile.read()
+tokenFile.close()
 
 dbx = dropbox_service.DropboxService(token=TOKEN)
 

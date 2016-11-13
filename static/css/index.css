@@ -13,21 +13,14 @@ body {
     padding: 0;
 }
 
-#tree, #files-table {
+
+#files-table {
+    display: none; /* before load */
+
     -webkit-box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.3);
     box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.3);
 
     padding: 0;
-}
-
-#tree {
-    padding: 15px;
-}
-
-#files-table {
-    display: none; /* before load */
-    width: calc(75% - 20px);
-    margin-left: 20px;
 }
 
 #files-table > thead > tr > th:first-of-type {
