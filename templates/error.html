@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block title %}
+    {{ status }}
+{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css"> {#for indexing#}
+    <style>
+        body {
+            padding: 100px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h1>{{ status }}</h1>
+    <p>Received an error status of {{ status }}. Please contact the developer.</p>
+{% endblock %}

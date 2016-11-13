@@ -1,0 +1,27 @@
+body {
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.login {
+    display: table; /* somehow, this works? */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+
+    width: 650px;
+    max-width: 70vw;
+    padding: 30px;
+
+    background: white;
+    -webkit-box-shadow: 0 2px 50px -5px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: 0 2px 50px -5px rgba(0, 0, 0, 0.75);
+    box-shadow: 0 2px 50px -5px rgba(0, 0, 0, 0.75);
+}
+
+#dev-token {
+    margin-top: 10px;
+}
