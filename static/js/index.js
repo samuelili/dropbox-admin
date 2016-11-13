@@ -35,7 +35,7 @@ $(function () {
     this.updateContents = function () {
         $.ajax({
             dataType: 'json',
-            url: '/crud/read',
+            url: '/items',
             success: function (files) {
                 console.log('Retrieved', files);
                 $files.html(''); // clean
