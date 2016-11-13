@@ -13,6 +13,7 @@ class DropboxService:
     :param folder:
     :return:
     '''
+
     def list(self, folder):
         files = []  # full of dictionaries
         for f in self.dbx.files_list_folder(folder).entries:
@@ -43,15 +44,10 @@ class DropboxService:
     '''
     List all shared folders.
     '''
-    def list_all_shared_folders(self):
-        files = []  # full of dictionaries
-        for f in self.dbx.files_list_folder('').entries:
-            f_dict = dict(name=f.name, path=f.path_lower, type='folder')
-            if isinstance(f, dropbox.files.FolderMetadata) & (f.sharing_info is not None):
-                f_dict['children'] = self.list_folders(f_dict['path'])
-                files.append(f_dict)
 
-        return files
+    def list_all_shared_folders(self):
+        result = self.dbx.sharing_list_shared_links()
+        return result.links
 
     def write(self, filename, data):
         return self.dbx.files_upload(data, '/' + filename)
@@ -60,9 +56,9 @@ class DropboxService:
         list out all files, including folders, in a directory.
         will not recursivly go through sub-folders
     '''
-    def read(self):
+
+    def list_all(self):
         files = []
-        epoch = datetime.datetime.utcfromtimestamp(0)
         for f in self.dbx.files_list_folder('').entries:  # retrieving names
             f_dict = dict(name=f.name, path=f.path_lower, type='file')
             if isinstance(f, dropbox.files.FolderMetadata):
@@ -83,5 +79,6 @@ class DropboxService:
         for debugging purposes.
         :returns dropbox instance
     '''
+
     def get_dropbox(self):
         return self.dbx
