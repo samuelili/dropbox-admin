@@ -56,18 +56,21 @@ class DropboxService:
     def write(self, filename, data):
         return self.dbx.files_upload(data, '/' + filename)
 
+    '''
+        list out all files, including folders, in a directory.
+        will not recursivly go through sub-folders
+    '''
     def read(self):
-        entries = []
+        files = []
         epoch = datetime.datetime.utcfromtimestamp(0)
-        for entry in self.dbx.files_list_folder('').entries:  # retrieving names
-            entrydict = {
-                'modified': (entry.client_modified - epoch).total_seconds() * 1000,
-                'name': entry.name,
-                'size': entry.size
-            }
+        for f in self.dbx.files_list_folder('').entries:  # retrieving names
+            f_dict = dict(name=f.name, path=f.path_lower, type='file')
+            if isinstance(f, dropbox.files.FolderMetadata):
+                f_dict['type'] = 'folder'
 
-            entries.append(entrydict)
-        return entries  # return the array
+            files.append(f_dict)
+
+        return files  # return the array
 
     def delete(self, filename):
         try:

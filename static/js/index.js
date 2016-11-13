@@ -30,7 +30,7 @@ $(function () {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
     };
 
-    window.fileElement = '<tr class="file"><th class="icon" scope="row">{icon}</th><td class="file-name">{name}</td><td>{type}</td><td>{size}</td></tr>';
+    window.fileElement = '<tr class="file"><th class="icon" scope="row">{icon}</th><td class="file-name">{name}</td><td>{type}</td></tr>';
     var extensionRegex = /(?:\.([^.]+))?$/;
     this.updateContents = function () {
         $.ajax({
@@ -43,14 +43,8 @@ $(function () {
                 files.forEach(function (file) {
                     var $fileElement = $(fileElement.format({
                         name: file.name.replace(/\.[^/.]+$/, ""),
-                        type: (function () {
-                            var extension = extensionRegex.exec(file.name)[1];
-                            if (extension != undefined)
-                                return extension;
-                            return 'none';
-                        }),
-                        size: obj.formatBytes(file.size),
-                        icon: 'insert_drive_file'
+                        type: obj.getExtension(file),
+                        icon: obj.decideIcon(file.type)
                     })).data('filename', file.name);
 
                     $files.append($fileElement);
@@ -62,8 +56,8 @@ $(function () {
         })
     };
 
-    this.listeners = function() {
-        $delete.on('click', function() {
+    this.listeners = function () {
+        $delete.on('click', function () {
             if (!$delete.hasClass('disabled')) {
                 $.ajax({
                     method: 'DELETE',
@@ -71,7 +65,7 @@ $(function () {
                     headers: {
                         'filename': obj.$selected.data('filename')
                     },
-                    success: function() {
+                    success: function () {
                         obj.updateContents();
                     }
                 });
@@ -91,6 +85,22 @@ $(function () {
 
             obj.$selected = $(this);
         });
+    };
+
+    this.getExtension = function (file) {
+        var extension = extensionRegex.exec(file.name)[1];
+        console.log(file.type);
+        if (file.type == 'folder')
+            return 'folder';
+        else if (extension != undefined)
+            return extension;
+        return 'none';
+    };
+
+    this.decideIcon = function(type) {
+        if (type == 'folder')
+            return 'folder';
+        return 'insert_drive_file';
     };
 
     // run initial methods
