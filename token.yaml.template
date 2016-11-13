@@ -1,0 +1,4 @@
+#
+# create a file, token.yaml for configuring dropbox security token.
+#
+dropbox-token=dropbox token here

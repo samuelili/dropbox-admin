@@ -1,3 +1,4 @@
 .idea/
-token.txt
 *.pyc
+token.yaml
+token.txt
