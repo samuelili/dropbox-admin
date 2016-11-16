@@ -22,6 +22,9 @@ with open('token.yaml', 'r') as token_file:
 
 service = dropbox_service.DropboxService(token=config['dropbox-token'])
 
+with open('pages.json', 'r') as f:
+    pagesJson = jsonpickle.decode(f.read())
+
 
 def start():
     global service
@@ -34,7 +37,7 @@ def start():
 # root page
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', pages=pagesJson)
 
 
 # login page
