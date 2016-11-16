@@ -1,10 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "layout.html" %}
 
-</body>
-</html>
+
+{% block title %}
+    Shared Links
+{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css"> {#for indexing#}
+    <link rel="stylesheet" href="/css/index.css">
+
+    <script src="/js/index.js"></script>
+{% endblock %}
+
+{% block content %}
+    Contents
+{% endblock %}
