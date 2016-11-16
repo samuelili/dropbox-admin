@@ -2,3 +2,12 @@ body {
     padding-top: 80px;
 }
 
+.navbar-brand {
+    padding: 5px !important;
+    image-rendering: crisp-edges;
+}
+
+.navbar-brand img {
+    display: inline-block !important;
+    height: 100%;
+}

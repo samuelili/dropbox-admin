@@ -40,6 +40,11 @@ def index():
     return render_template('index.html', pages=pagesJson)
 
 
+# shared link page
+@app.route('/pages/links.html')
+def link_page():
+    return render_template('links.html', pages=pagesJson)
+
 # login page
 @app.route('/login')
 def login():
