@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block title %}
-    index
+    Home
 {% endblock %}
 
 {% block head %}
@@ -8,51 +8,43 @@
     <link rel="stylesheet" href="/css/index.css">
 
     <script src="/js/index.js"></script>
-{% endblock %}
+{% endblock %} {#for indexing#}
 
 {% block content %}
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header pull-left">
+                <div class="navbar-brand">Brand</div>
+            </div>
+
+            <!-- I don't want it apart of the collapsible portion -->
+            <div class="navbar-header pull-right">
+                <ul class="nav navbar-nav pull-left">
+                    {% for page in pages %}
+                        <li><a href="{{ page.link }}">{{ page.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
     <div class="container-fluid">
         <div class="row">
-            <h1>Welcome</h1>
-        </div>
-        <div class="row toolbar">
-            <div class="btn-group actions">
-                <button class="btn btn-primary material-icons" id="upload" data-toggle="modal"
-                        data-target="#upload-modal">cloud_upload
-                </button>
-                <button class="btn btn-danger disabled material-icons" id="delete">delete</button>
+            <div class="col-xs-12">
+                <div class="jumbotron">
+                    <h1>Dropbox Admin</h1>
+                    <p>Telenav's Dropbox admin page</p>
+                </div>
             </div>
         </div>
         <div class="row">
-            <table class="col-xs-12 table table-hover" id="files-table">
-                <thead>
-                <tr>
-                    <th></th>
-                    <th>Name</th>
-                    <th>Type</th>
-                </tr>
-                </thead>
-                <tbody id="files"></tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Modal -->
-    <div class="modal fade" id="upload-modal" tabindex="-1" role="dialog" aria-labelledby="uploadModalLabel">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                            aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="uploadModalLabel">Upload File</h4>
-                </div>
-                <div class="modal-body">
-                    <input id="image-file" type="file"/>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                </div>
+            <div class="col-xs-10 col-xs-offset-1 col-md-8 col-md-offset-2 list-group">
+                {% for page in pages %}
+                    <a class="list-group-item" href="{{ page.link }}">
+                        <h4>{{ page.name }}</h4>
+                        <p>{{ page.description }}</p>
+                    </a>
+                {% endfor %}
             </div>
         </div>
     </div>
