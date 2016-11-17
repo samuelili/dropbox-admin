@@ -9,10 +9,32 @@
     <script src="/js/jquery-3.1.1.min.js"></script>
     <script src="/bootstrap/js/bootstrap.min.js"></script>
 
-    {% block head %}{% endblock %}
     <link rel="stylesheet" href="/bootstrap/css/bootstrap.yeti.min.css">
+    <link rel="stylesheet" href="/css/styles.css">
+
+    {% block head %}{% endblock %}
 </head>
 <body>
+
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header pull-left">
+            <a class="navbar-brand" href="/">
+                <img src="/images/dropbox_telenav.png" alt="Dropbox Telenav">
+            </a>
+        </div>
+        <div class="navbar-header pull-right">
+            <div class="navbar-header">
+                <ul class="nav navbar-nav pull-left">
+                    {% for page in pages %}
+                        <li><a href="{{ page.link }}">{{ page.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+
 {% block content %}{% endblock %}
 </body>
 </html>
