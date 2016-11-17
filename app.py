@@ -34,6 +34,12 @@ def start():
         logging.error("Error reading token.yaml. Please make sure the token.yaml file is properly configured.")
 
 
+# define contextual processes.
+@app.context_processor
+def pages_json():
+    return dict(pages=pagesJson)
+
+
 # root page
 @app.route('/')
 def index():

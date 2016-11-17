@@ -3,7 +3,7 @@
   "description": "View all folders and files that are shared",
   "link": "/pages/links.html"
 }, {
-  "name": "All Files",
-  "description": "View all folders and files",
+  "name": "Status",
+  "description": "View the current status",
   "link": "#"
 }]

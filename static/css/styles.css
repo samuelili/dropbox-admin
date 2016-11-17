@@ -1,0 +1,21 @@
+body {
+    padding-top: 80px;
+}
+
+.navbar-brand img {
+    height: 100%;
+}
+
+@media (max-width: 768px) {
+    .navbar-nav {
+        margin: 6px 0;
+    }
+
+    .navbar-brand {
+        height: 53px;
+    }
+
+    .navbar-nav > li {
+        float: left;
+    }
+}

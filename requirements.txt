@@ -1,0 +1,4 @@
+flask==0.11.1
+dropbox==7.1.1
+jsonpickle==0.9.3
+pyyaml==3.12
