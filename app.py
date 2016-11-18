@@ -29,7 +29,7 @@ with open('pages.json', 'r') as f:
 def start():
     global service
     try:
-        app.run(debug=True)
+        app.run(debug=True, host=config['host'], port=config['port'])
     except IOError:
         logging.error("Error reading token.yaml. Please make sure the token.yaml file is properly configured.")
 
@@ -39,17 +39,21 @@ def start():
 def pages_json():
     return dict(pages=pagesJson)
 
+@app.context_processor
+def is_index():
+    return dict(is_index=False)
 
 # root page
 @app.route('/')
 def index():
-    return render_template('index.html', pages=pagesJson)
+    return render_template('index.html', is_index=True)
 
 
 # shared link page
 @app.route('/pages/links.html')
 def link_page():
-    return render_template('links.html', pages=pagesJson)
+    return render_template('links.html')
+
 
 # login page
 @app.route('/login')

@@ -2,3 +2,5 @@
 # create a file, token.yaml for configuring dropbox security token.
 #
 dropbox-token: dropbox token here
+port: 5000
+host: 0.0.0.0
