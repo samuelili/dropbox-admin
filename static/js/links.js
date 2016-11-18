@@ -23,8 +23,8 @@ $(function () {
     window.fileElement = '<tr class="file">' +
         '<th class="user">{user}</th>' +
         '<th class="path">{path}</th>' +
+        '<th class="access">{access}</th>' +
         '<th class="url"><a href="{url}" target="_blank">{url}</a></th>' +
-        '<th>{linkDate}</th>' +
         '<th>{age}</th>' +
         '</tr>';
     this.updateContents = function () {
@@ -35,8 +35,9 @@ $(function () {
                 $files.html('');
                 members.forEach(function (member) {
                     console.log(member);
-                    member.shared.forEach(function (file) {
-                        var $fileElement = $(fileElement.format(obj.processFile(member.name, file))).data('file', obj.processFile(member.name, file));
+                    /** @namespace member.shared */
+                    member.shared.forEach(function (share) {
+                        var $fileElement = $(fileElement.format(obj.processFile(member, share))).data('file', obj.processFile(member, share));
                         $files.append($fileElement);
                     });
                 });
@@ -54,6 +55,7 @@ $(function () {
     var emptyInfo = {
         'user': '',
         'path': '',
+        'access': '',
         'url': '',
         'linkDate': '',
         'age': ''
@@ -72,11 +74,13 @@ $(function () {
     };
 
     // requires path, url, link date, expiration
-    this.processFile = function (user, file) {
+    this.processFile = function (member, file) {
         var data = {};
 
-        data.user = user;
+        data.user = member.name;
+        data.member_id = member.team_id;
         data.path = file.path;
+        data.access = file.access_type;
         data.url = file.preview_url;
         data.linkDate = file.time_invited;
         data.age = file.days_old + ' days';
@@ -89,7 +93,9 @@ $(function () {
         console.log('updated with', info);
 
         $('.user', $information).text(info.user);
+        $('.member_id', $information).text(info.member_id);
         $('.path', $information).text(info.path);
+        $('.access', $information).text(info.access);
         $('.url', $information).attr('href', info.url);
         $('.url', $information).text(info.url);
         $('.linkDate', $information).text(info.linkDate);
