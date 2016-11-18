@@ -13,91 +13,95 @@ import dropbox_service
 
 SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
 
-app = Flask(__name__)
+application = Flask(__name__)
 
-app.secret_key = os.urandom(24)
+application.secret_key = os.urandom(24)
 
-with open('token.yaml', 'r') as token_file:
-    config = yaml.load(token_file)
+try:
+    with open('token.yaml', 'r') as token_file:
+        config = yaml.load(token_file)
+    with open('pages.json', 'r') as f:
+        pagesJson = jsonpickle.decode(f.read())
+    service = dropbox_service.DropboxService(token=config['dropbox-token'])
 
-service = dropbox_service.DropboxService(token=config['dropbox-token'])
-
-with open('pages.json', 'r') as f:
-    pagesJson = jsonpickle.decode(f.read())
-
-
-def start():
-    global service
-    try:
-        app.run(debug=True)
-    except IOError:
-        logging.error("Error reading token.yaml. Please make sure the token.yaml file is properly configured.")
+except IOError:
+    logging.error("Error reading token.yaml. Please make sure the token.yaml file is properly configured.")
 
 
 # define contextual processes.
-@app.context_processor
+@application.context_processor
 def pages_json():
     return dict(pages=pagesJson)
 
 
-# root page
-@app.route('/')
+@application.route('/')
 def index():
     return render_template('index.html', pages=pagesJson)
 
 
 # shared link page
-@app.route('/pages/links.html')
+@application.route('/pages/links.html')
 def link_page():
     return render_template('links.html', pages=pagesJson)
 
 
+'''
+
+To be used in the future.
+
+
+'''
+
 # login page
-@app.route('/login')
+@application.route('/login')
 def login():
     return render_template('login.html'), 302
 
 
 # read
-@app.route('/items', methods=['GET'])
+@application.route('/items', methods=['GET'])
 def read():
     return json.dumps(service.list_all())
 
 
-@app.route('/links', methods=['GET'])
+@application.route('/links', methods=['GET'])
 def list_all_shared():
     force_update = (request.args.get('force-update') == "1")
     result = service.list_all_shared_folders(force_update=force_update)
     return json.dumps(json.loads(jsonpickle.encode(result)), indent=2)
 
 
-@app.route('/progress', methods=['GET'])
+@application.route('/progress', methods=['GET'])
 def get_progress():
     return json.dumps(json.loads(jsonpickle.encode(service.progress)), indent=2)
 
 
-@app.route('/test', methods=['GET'])
+@application.route('/test', methods=['GET'])
 def list_all_groups():
     result = service.test()
     return json.dumps(json.loads(jsonpickle.encode(result)), indent=2)
 
 
-@app.route('/crud/write', methods=['POST'])
+@application.route('/crud/write', methods=['POST'])
 def write():
     return service.write(request.form['filename'], request.form['data'])
 
 
-@app.route('/crud/delete', methods=['DELETE'])
+@application.route('/crud/delete', methods=['DELETE'])
 def delete():
     value = service.delete(request.headers.get('filename'))
     return str(value), value
 
 
-@app.errorhandler(404)
+@application.errorhandler(404)
 def error(e):
     return render_template('error.html', status=e.code), e.code
 
 
-@app.route('/<path:path>')
+@application.route('/<path:path>')
 def send_js(path):
     return send_from_directory('static', path)
+
+
+if __name__ == '__main__':
+    application.run(host='0.0.0.0', debug=True)

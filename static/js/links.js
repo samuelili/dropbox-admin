@@ -21,23 +21,24 @@ $(function () {
     };
 
     window.fileElement = '<tr class="file">' +
+        '<th class="user">{user}</th>' +
         '<th class="path">{path}</th>' +
         '<th class="url"><a href="{url}" target="_blank">{url}</a></th>' +
         '<th>{linkDate}</th>' +
-        '<th>{expiration}</th>' +
+        '<th>{age}</th>' +
         '</tr>';
     this.updateContents = function () {
         $.ajax({
             dataType: 'json',
             url: '/links',
-            success: function (files) {
-                console.log('Retrieved', files);
-                $files.html(''); // clean
-
-                files.forEach(function (file) {
-                    var $fileElement = $(fileElement.format(obj.processFile(file))).data('file', obj.processFile(file));
-
-                    $files.append($fileElement);
+            success: function(members) {
+                $files.html('');
+                members.forEach(function (member) {
+                    console.log(member);
+                    member.shared.forEach(function (file) {
+                        var $fileElement = $(fileElement.format(obj.processFile(member.name, file))).data('file', obj.processFile(member.name, file));
+                        $files.append($fileElement);
+                    });
                 });
 
                 $filesTable.show(); // reveal files after load
@@ -51,10 +52,11 @@ $(function () {
     };
 
     var emptyInfo = {
+        'user': '',
         'path': '',
         'url': '',
         'linkDate': '',
-        'expiration': ''
+        'age': ''
     };
     this.fileListeners = function () {
         $('.file', $files).on('click', function () {
@@ -70,32 +72,28 @@ $(function () {
     };
 
     // requires path, url, link date, expiration
-    this.processFile = function (file) {
+    this.processFile = function (user, file) {
         var data = {};
 
-        data.path = file._path_lower_value;
-
-        data.url = 'No Url';
-        if (file._url_present)
-            data.url = file._url_value.substring(0, file._url_value.length - 5);
-
-        data.linkDate = 'None';
-
-        data.expiration = 'None';
-        if (file._expires_value != null)
-            file.expiration = file._expires_value;
+        data.user = user;
+        data.path = file.path;
+        data.url = file.preview_url;
+        data.linkDate = file.time_invited;
+        data.age = file.days_old + ' days';
 
         return data;
     };
 
+
     this.updateInfo = function (info) {
         console.log('updated with', info);
 
+        $('.user', $information).text(info.user);
         $('.path', $information).text(info.path);
         $('.url', $information).attr('href', info.url);
         $('.url', $information).text(info.url);
         $('.linkDate', $information).text(info.linkDate);
-        $('.expiration', $information).text(info.expiration);
+        $('.age', $information).text(info.age);
     };
 
     // run initial methods
