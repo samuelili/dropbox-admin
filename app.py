@@ -66,7 +66,7 @@ def read():
 
 @app.route('/links', methods=['GET'])
 def list_all_shared():
-    force_update = (request.args.get('force-update') is True)
+    force_update = (request.args.get('force-update') == "1")
     result = service.list_all_shared_folders(force_update=force_update)
     return json.dumps(json.loads(jsonpickle.encode(result)), indent=2)
 

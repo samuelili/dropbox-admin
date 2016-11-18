@@ -4,6 +4,7 @@ from datetime import datetime
 
 import dropbox
 import jsonpickle
+import operator
 from dropbox.files import DeleteError
 
 PATH_SHARED_FOLDER_LIST_RESULT = "/tmp/dropbox_list_result.json"
@@ -21,6 +22,7 @@ class DropboxService:
     :param folder:
     :return:
     '''
+
     def list(self, folder):
         files = []  # full of dictionaries
         for f in self.dbx.files_list_folder(folder).entries:
@@ -51,8 +53,9 @@ class DropboxService:
     '''
     List all shared folders.
     '''
+
     def list_all_shared_folders(self, force_update=True):
-        if not os.path.exists(PATH_SHARED_FOLDER_LIST_RESULT) or force_update:
+        if self.__should_update() or force_update:
             self.members = []
             dbx_members = self.dbxt.team_members_list().members
             for dbx_member in dbx_members:
@@ -80,6 +83,8 @@ class DropboxService:
                     })
                 self.progress["processed"] += 1
 
+            self.members.sort(key=operator.itemgetter('name'))
+
             with open(PATH_SHARED_FOLDER_LIST_RESULT, "wb") as output_file:
                 json.dump(json.loads(jsonpickle.encode(self.members)), output_file)
         else:
@@ -98,6 +103,13 @@ class DropboxService:
             return "viewer"
         else:
             return "other"
+
+    @staticmethod
+    def __should_update():
+        if not os.path.exists(PATH_SHARED_FOLDER_LIST_RESULT):
+            return True
+        delta = datetime.now() - datetime.fromtimestamp(os.stat(PATH_SHARED_FOLDER_LIST_RESULT).st_mtime)
+        return delta.seconds > 24 * 60 * 60
 
     def write(self, filename, data):
         return self.dbx.files_upload(data, '/' + filename)
