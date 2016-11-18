@@ -1,0 +1,60 @@
+body {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+#files-table, #information {
+    -webkit-transition: width 500ms;
+    transition: width 500ms;
+}
+
+#files-table {
+    table-layout: fixed;
+}
+
+#files-table .path, #files-table .url {
+    -ms-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+
+    overflow: hidden;
+}
+
+#files-table .path {
+    width: 20%;
+}
+
+#files-table .url {
+    width: 50%;
+}
+
+#files-table .linkDate, #files-table .expiration {
+    width: 85px;
+}
+
+#information {
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+#information p, #information a {
+    width: 100%;
+    margin-bottom: 2px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+#information .path,
+#information .url,
+#information .linkDate,
+#information .expiration {
+    font-weight: normal;
+    font-size: 12px;
+    word-break: break-all;
+}
+
+@media (max-width: 768px) {
+    #information {
+        width: 0;
+        padding: 0;
+    }
+}

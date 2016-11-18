@@ -6,11 +6,47 @@
 {% endblock %}
 
 {% block head %}
-    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/links.css">
 
-    <script src="/js/index.js"></script>
+    <script src="/js/links.js"></script>
 {% endblock %}
 
 {% block content %}
-    Contents
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-2">
+                <a class="btn btn-primary btn-xs" href="/">
+                    <span class="glyphicon glyphicon-chevron-left"></span> Go Back</a>
+            </div>
+            <div class="col-xs-10">
+                <h1>Shared Links</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-9" id="files-table">
+                <table class="table table-hover" id="files-table">
+                    <thead>
+                    <tr>
+                        <th class="path">Path</th>
+                        <th class="url">Url</th>
+                        <th class="linkDate">Link Date</th>
+                        <th class="expiration">Expiration</th>
+                    </tr>
+                    </thead>
+                    <tbody id="files"></tbody>
+                </table>
+            </div>
+            <div class="col-sm-3" id="information">
+                <h3>File Information</h3>
+                <p>Path:</p>
+                <p class="path"></p>
+                <p>Url:</p>
+                <a class="url" target="_blank"></a>
+                <p>Link Date:</p>
+                <p class="linkDate"></p>
+                <p>Expiration Date:</p>
+                <p class="expiration"></p>
+            </div>
+        </div>
+    </div>
 {% endblock %}
