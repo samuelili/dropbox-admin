@@ -51,6 +51,7 @@ def index():
 def link_page():
     return render_template('links.html', pages=pagesJson)
 
+
 # login page
 @app.route('/login')
 def login():
@@ -65,7 +66,19 @@ def read():
 
 @app.route('/links', methods=['GET'])
 def list_all_shared():
-    result = service.list_all_shared_folders()
+    force_update = (request.args.get('force-update') is True)
+    result = service.list_all_shared_folders(force_update=force_update)
+    return json.dumps(json.loads(jsonpickle.encode(result)), indent=2)
+
+
+@app.route('/progress', methods=['GET'])
+def get_progress():
+    return json.dumps(json.loads(jsonpickle.encode(service.progress)), indent=2)
+
+
+@app.route('/test', methods=['GET'])
+def list_all_groups():
+    result = service.test()
     return json.dumps(json.loads(jsonpickle.encode(result)), indent=2)
 
 
