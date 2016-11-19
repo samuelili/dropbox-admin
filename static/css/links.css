@@ -43,10 +43,13 @@ body {
     font-weight: bold;
 }
 
+#information .user,
 #information .path,
+#information .access,
 #information .url,
 #information .linkDate,
-#information .expiration {
+#information .member_id,
+#information .age {
     font-weight: normal;
     font-size: 12px;
     word-break: break-all;
