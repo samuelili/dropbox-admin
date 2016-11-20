@@ -8,7 +8,6 @@ from flask import json
 from flask import render_template
 from flask import request
 from flask import send_from_directory
-from flask import send_file
 
 import dropbox_service
 
@@ -59,14 +58,26 @@ def list_all_team_members():
     return json.dumps(json.loads(jsonpickle.encode(service.list_team_members())), indent=2)
 
 
-@application.route('/members/<team_member_id>/shared-folders', methods=['GET'])
+@application.route('/members/<path:team_member_id>/shared-folders', methods=['GET'])
 def list_shared_folders(team_member_id):
     return json.dumps(json.loads(jsonpickle.encode(service.list_shared_folders(team_member_id))), indent=2)
 
 
-@application.route('/members/<team_member_id>/shared-links', methods=['GET'])
+@application.route('/members/<path:team_member_id>/shared-links', methods=['GET'])
 def list_shared_links(team_member_id):
     return json.dumps(json.loads(jsonpickle.encode(service.list_shared_links(team_member_id))), indent=2)
+
+
+@application.route('/members/<path:team_member_id>/shared-links/<path:url>/_revoke', methods=['DELETE'])
+def revoke_shared_link(team_member_id, url):
+    service.revoke_shared_link(team_member_id, url)
+    return {}
+
+
+@application.route('/members/<path:team_member_id>/shared-folders/<path:shared_folder_id>/_unshare', methods=['GET'])
+def unshare_folder(team_member_id, shared_folder_id):
+    service.unshare_folder(team_member_id, shared_folder_id)
+    return {}
 
 
 @application.route('/pages/members')
@@ -106,32 +117,9 @@ def login():
     return render_template('login.html'), 302
 
 
-# read
-# @application.route('/items', methods=['GET'])
-# def read():
-#     return json.dumps(service.list_all())
-
-
 @application.route('/progress', methods=['GET'])
 def get_progress():
     return json.dumps(json.loads(jsonpickle.encode(service.progress)), indent=2)
-
-
-@application.route('/test', methods=['GET'])
-def list_all_groups():
-    result = service.test()
-    return json.dumps(json.loads(jsonpickle.encode(result)), indent=2)
-
-
-@application.route('/crud/write', methods=['POST'])
-def write():
-    return service.write(request.form['filename'], request.form['data'])
-
-
-@application.route('/crud/delete', methods=['DELETE'])
-def delete():
-    value = service.delete(request.headers.get('filename'))
-    return str(value), value
 
 
 @application.errorhandler(404)
