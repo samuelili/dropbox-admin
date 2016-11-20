@@ -45,12 +45,37 @@ def link_page():
     return render_template('links.html', pages=pagesJson)
 
 
+@application.route('/links', methods=['GET'])
+def list_all_shared_folders():
+    force_update = (request.args.get('force-update') == "1")
+    result = service.list_all_shared_folders(force_update=force_update)
+    return json.dumps(json.loads(jsonpickle.encode(result)), indent=2)
+
+
+@application.route('/members', methods=['GET'])
+def list_all_team_members():
+    return json.dumps(json.loads(jsonpickle.encode(service.list_team_members())), indent=2)
+
+
+@application.route('/members/<team_member_id>/shared-folders', methods=['GET'])
+def list_shared_folders(team_member_id):
+    return json.dumps(json.loads(jsonpickle.encode(service.list_shared_folders(team_member_id))), indent=2)
+
+
+@application.route('/members/<team_member_id>/shared-links', methods=['GET'])
+def list_shared_links(team_member_id):
+    return json.dumps(json.loads(jsonpickle.encode(service.list_shared_links(team_member_id))), indent=2)
+
+
+
+
 '''
 
 To be used in the future.
 
 
 '''
+
 
 # login page
 @application.route('/login')
@@ -62,13 +87,6 @@ def login():
 @application.route('/items', methods=['GET'])
 def read():
     return json.dumps(service.list_all())
-
-
-@application.route('/links', methods=['GET'])
-def list_all_shared():
-    force_update = (request.args.get('force-update') == "1")
-    result = service.list_all_shared_folders(force_update=force_update)
-    return json.dumps(json.loads(jsonpickle.encode(result)), indent=2)
 
 
 @application.route('/progress', methods=['GET'])

@@ -5,93 +5,92 @@ from datetime import datetime
 import dropbox
 import jsonpickle
 import operator
-from dropbox.files import DeleteError
 
 PATH_SHARED_FOLDER_LIST_RESULT = "/tmp/dropbox_list_result.json"
 
 
 class DropboxService:
     def __init__(self, token=None):
-        self.members = None
-        self.dbx = dropbox.Dropbox(token)
         self.dbxt = dropbox.DropboxTeam(token)
         self.progress = {"processed": 0, "total": 1}
 
-    '''
-    Recursively list all files under a folder including folders
-    :param folder:
-    :return:
-    '''
-
-    def list(self, folder):
-        files = []  # full of dictionaries
-        for f in self.dbx.files_list_folder(folder).entries:
-            f_dict = dict(name=f.name, path=f.path_lower, type='file')
-            if isinstance(f, dropbox.files.FolderMetadata):
-                f_dict['file'] = 'folder'
-                f_dict['children'] = self.list(f_dict['path'])
-            files.append(f_dict)
-
-        return files
-
-    '''
-    Recursively list all sub-folders of a folder.
-    :param folder:
-    :return:
-    '''
-
-    def list_folders(self, folder):
-        files = []  # full of dictionaries
-        for f in self.dbx.files_list_folder(folder).entries:
-            f_dict = dict(name=f.name, path=f.path_lower, type='folder')
-            if isinstance(f, dropbox.files.FolderMetadata):
-                f_dict['children'] = self.list_folders(f_dict['path'])
-                files.append(f_dict)
-
-        return files
-
-    '''
-    List all shared folders.
-    '''
-
     def list_all_shared_folders(self, force_update=True):
+        '''
+        List all shared folders of all team members
+        :param force_update:
+        :return:
+        '''
         if self.__should_update() or force_update:
-            self.members = []
-            dbx_members = self.dbxt.team_members_list().members
-            for dbx_member in dbx_members:
-                self.members.append({
-                    "team_id": dbx_member.profile.team_member_id,
-                    "name": dbx_member.profile.name.display_name,
-                    "shared": []
-                })
-
+            members = self.list_team_members()
+            self.progress["total"] = len(members)
             self.progress["processed"] = 0
-            self.progress["total"] = len(self.members)
 
-            for member in self.members:
-                print member["name"]
-                dbx = self.dbxt.as_user(member["team_id"])
-                for entry in dbx.sharing_list_folders().entries:
-                    member["shared"].append({
-                        "name": entry.name,
-                        "path": entry.path_lower,
-                        "time_invited": entry.time_invited.strftime("%x"),
-                        "days_old": (datetime.now() - entry.time_invited).days,
-                        "preview_url": entry.preview_url,
-                        "access_type": self.__get_access_type(entry.access_type),
-                        "shared_folder_id": entry.shared_folder_id
-                    })
+            for member in members:
+                member["shared"] = self.list_shared_folders(member["team_member_id"])
                 self.progress["processed"] += 1
+                print self.progress
 
-            self.members.sort(key=operator.itemgetter('name'))
+            members.sort(key=operator.itemgetter('display_name'))
 
             with open(PATH_SHARED_FOLDER_LIST_RESULT, "wb") as output_file:
-                json.dump(json.loads(jsonpickle.encode(self.members)), output_file)
+                json.dump(json.loads(jsonpickle.encode(members)), output_file)
         else:
             with open(PATH_SHARED_FOLDER_LIST_RESULT, "r") as f:
-                self.members = json.load(f)
+                members = json.load(f)
 
-        return self.members
+        return members
+
+    def list_team_members(self):
+        '''
+        List all team members.
+        :return:
+        '''
+        members = []
+        dbx_members = self.dbxt.team_members_list().members
+        for dbx_member in dbx_members:
+            members.append({
+                "team_member_id": dbx_member.profile.team_member_id,
+                "display_name": dbx_member.profile.name.display_name
+            })
+        return members
+
+    def list_shared_links(self, team_member_id):
+        dbx = self.dbxt.as_user(team_member_id)
+        result = dbx.sharing_list_shared_links()
+        links = []
+        for link in result.links:
+            links.append({
+                "id": link.id,
+                "name": link.name,
+                "path": link.path_lower,
+                "url": link.url,
+                "can_revoke": link.link_permissions.can_revoke,
+                "visibility": self.__get_link_visibility(link.link_permissions.resolved_visibility),
+                "expires": link.expires
+            })
+        return links
+
+    def list_shared_folders(self, team_member_id):
+        '''
+        Lists the shared folders of a team member.
+
+        :param team_member_id:
+        :return:
+        '''
+        dbx = self.dbxt.as_user(team_member_id)
+        shared_folders = []
+        for entry in dbx.sharing_list_folders().entries:
+            shared_folders.append({
+                "name": entry.name,
+                "path": entry.path_lower,
+                "time_invited": entry.time_invited.strftime("%x"),
+                "days_old": (datetime.now() - entry.time_invited).days,
+                "preview_url": entry.preview_url,
+                "access_type": self.__get_access_type(entry.access_type),
+                "shared_folder_id": entry.shared_folder_id
+            })
+
+        return shared_folders
 
     @staticmethod
     def __get_access_type(dbx_access):
@@ -111,39 +110,11 @@ class DropboxService:
         delta = datetime.now() - datetime.fromtimestamp(os.stat(PATH_SHARED_FOLDER_LIST_RESULT).st_mtime)
         return delta.seconds > 24 * 60 * 60
 
-    def write(self, filename, data):
-        return self.dbx.files_upload(data, '/' + filename)
-
-    '''
-        list out all files, including folders, in a directory.
-        will not recursivly go through sub-folders
-    '''
-
-    def list_all(self):
-        files = []
-        for f in self.dbx.files_list_folder('').entries:  # retrieving names
-            f_dict = dict(name=f.name, path=f.path_lower, type='file')
-            if isinstance(f, dropbox.files.FolderMetadata):
-                f_dict['type'] = 'folder'
-
-            files.append(f_dict)
-
-        return files  # return the array
-
-    def delete(self, filename):
-        try:
-            self.dbx.files_delete('/' + filename)  # delete
-            return 200
-        except DeleteError:
-            return 404
-
-    '''
-        for debugging purposes.
-        :returns dropbox instance
-    '''
-
-    def get_dropbox(self):
-        return self.dbx
-
-    def test(self):
-        return self.dbxt.team_alpha_groups_list()
+    @staticmethod
+    def __get_link_visibility(visibility):
+        if visibility.is_shared_folder_only():
+            return "Shared Folder"
+        elif visibility.is_team_and_password:
+            return "Team and Password"
+        else:
+            return "Others"
