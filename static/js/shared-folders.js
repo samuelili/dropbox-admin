@@ -5,7 +5,7 @@ $(function () {
     // variable declarations
     var obj = this; // give reference
     var $filesTable = $('#files-table');
-    var $links = $('#links');
+    var $files = $('#files');
     var $information = $('#information');
     this.$selected = $(); // jquery equivalent null
 
@@ -16,21 +16,22 @@ $(function () {
         '<th class="age" style="color: {ageColor}">{age}</th>' +
         '</tr>';
     this.updateContents = function () {
-
         $.ajax({
             dataType: 'json',
-            url: '/links',
+            url: '/shared-folders',
             success: function(members) {
-                $links.html('');
+                $files.html('');
                 members.forEach(function (member) {
-                    member.links.forEach(function (link) {
-                        var $linkElement = $(fileElement.format(obj.processLink(member, link))).data('link', obj.processLink(member, link));
-                        $links.append($linkElement);
+                    console.log(member);
+                    /** @namespace member.shared */
+                    member.shared.forEach(function (share) {
+                        var $fileElement = $(fileElement.format(obj.processFile(member, share))).data('file', obj.processFile(member, share));
+                        $files.append($fileElement);
                     });
                 });
 
                 $filesTable.show(); // reveal files after load
-                obj.linkListeners();
+                obj.fileListeners();
             }
         })
     };
@@ -48,13 +49,13 @@ $(function () {
         'memberId': '',
         'age': ''
     };
-    this.linkListeners = function () {
-        $('.file', $links).on('click', function () {
+    this.fileListeners = function () {
+        $('.file', $files).on('click', function () {
             obj.$selected.removeClass('active');
             obj.updateInfo(emptyInfo);
             if (obj.$selected[0] != this) {
                 $(this).toggleClass('active');
-                obj.updateInfo($(this).data('link'));
+                obj.updateInfo($(this).data('file'));
             }
 
             obj.$selected = $(this);
@@ -62,7 +63,7 @@ $(function () {
     };
 
     // requires path, url, link date, expiration
-    this.processLink = function (member, file) {
+    this.processFile = function (member, file) {
         var data = {};
 
         data.user = member.display_name;
