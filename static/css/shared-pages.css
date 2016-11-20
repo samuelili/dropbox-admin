@@ -3,6 +3,13 @@
     transition: width 500ms;
 }
 
+#files-table {
+    table-layout: fixed;
+}
+
+#files-table th, #files-table a {
+    word-break: break-all;
+}
 
 #information p, #information a {
     width: 100%;
@@ -11,12 +18,13 @@
     font-weight: bold;
 }
 
-#information .user,
+#information .member,
+#information .revoke,
+#information .name,
 #information .path,
-#information .access,
-#information .linkDate,
+#information .expiration,
 #information .member_id,
-#information .age {
+#information .url {
     font-weight: normal;
     font-size: 12px;
     word-break: break-all;

@@ -9,12 +9,13 @@ $(function () {
     var $information = $('#information');
     this.$selected = $(); // jquery equivalent null
 
-    window.fileElement = '<tr class="file">' +
-        '<th class="user"><a href="/pages/dashboard#{memberId}">{user}</a></th>' +
-        '<th class="path"><a href="{url}">{path}</a></th>' +
-        '<th class="access">{access}</th>' +
-        '<th class="age" style="color: {ageColor}">{age}</th>' +
-        '</tr>';
+    var linkHtml = '<tr class="file">' +
+        '<th>{member}</th>' +
+        '<th style="color: {revokeColor}">{revoke}</th>' +
+        '<th>{name}</th>' +
+        '<th>{expiration}</th>' +
+        '<th><a href="{url}" target="_blank">{path}</a></th>' +
+        '<th>{visible}</th></tr>';
     this.updateContents = function () {
 
         $.ajax({
@@ -22,14 +23,15 @@ $(function () {
             url: '/links',
             success: function(members) {
                 $links.html('');
+                console.log('Retrieved', members);
+
+                $filesTable.show(); // reveal files after load
                 members.forEach(function (member) {
                     member.links.forEach(function (link) {
-                        var $linkElement = $(fileElement.format(obj.processLink(member, link))).data('link', obj.processLink(member, link));
+                        var $linkElement = $(linkHtml.format(obj.processLink(member, link))).data('link', obj.processLink(member, link));
                         $links.append($linkElement);
                     });
                 });
-
-                $filesTable.show(); // reveal files after load
                 obj.linkListeners();
             }
         })
@@ -40,13 +42,12 @@ $(function () {
     };
 
     var emptyInfo = {
-        'user': '',
-        'path': '',
-        'access': '',
-        'url': '',
-        'linkDate': '',
+        'expiration': '',
+        'member': '',
         'memberId': '',
-        'age': ''
+        'path': '',
+        'url': '',
+        'user': ''
     };
     this.linkListeners = function () {
         $('.file', $links).on('click', function () {
@@ -61,39 +62,43 @@ $(function () {
         });
     };
 
-    // requires path, url, link date, expiration
-    this.processLink = function (member, file) {
+    this.processLink = function (member, link) {
         var data = {};
 
-        data.user = member.display_name;
-        data.memberId = member.team_member_id;
-        data.path = file.path;
-        data.access = file.access_type;
-        data.url = file.preview_url;
-        data.linkDate = file.time_invited;
+        data.member = member.display_name;
 
-        data.age = file.days_old;
-        data.ageColor = 'ForestGreen';
-        if (data.age >= 180)
-            data.ageColor = 'Crimson';
-        else if (data.age >= 90)
-            data.ageColor = 'Coral';
+        data.revoke = link.can_revoke;
+        data.revokeColor = 'ForestGreen';
+        if (!data.revoke)
+            data.revokeColor = 'Crimson';
+
+        data.name = link.name;
+        data.path = link.path;
+        data.url = link.url;
+
+        data.expiration = link.expires;
+        if(link.expires == null)
+            data.expiration = 'Never';
+
+        data.visible = link.visibility;
+        data.memberId = member.team_member_id;
 
         return data;
     };
 
 
     this.updateInfo = function (info) {
-        console.log('updated with', info);
+        console.log('Updated with', info);
 
-        $('.user', $information).text(info.user);
-        $('.member_id', $information).text(info.memberId);
+        $('.member', $information).text(info.member);
+        $('.revoke', $information).text(info.revoke);
+        $('.name', $information).text(info.name);
         $('.path', $information).text(info.path);
-        $('.access', $information).text(info.access);
-        $('.url', $information).attr('href', info.url);
+        $('.expiration', $information).text(info.expiration);
+        $('.member_id', $information).text(info.memberId);
+        $('.url').attr('href', info.url);
         $('.url', $information).text(info.url);
-        $('.linkDate', $information).text(info.linkDate);
-        $('.age', $information).text(info.age);
+
     };
 
     // run initial methods
