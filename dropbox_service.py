@@ -103,6 +103,16 @@ class DropboxService:
             })
         return links
 
+    def revoke_shared_link(self, team_member_id, url):
+        """
+        Revokes the shared link of a team member.
+        :param team_member_id:
+        :param url:
+        :return:
+        """
+        dbx = self.dbxt.as_user(team_member_id)
+        dbx.sharing_revoke_shared_link(url)
+
     def list_shared_folders(self, team_member_id):
         """
         Lists the shared folders of a team member.
@@ -124,6 +134,10 @@ class DropboxService:
             })
 
         return shared_folders
+
+    def unshare_folder(self, team_member_id, shared_folder_id):
+        dbx = self.dbxt.as_user(team_member_id)
+        dbx.sharing_unshare_folder(shared_folder_id, False)
 
     def get_member_info(self, team_member_id, account_id):
         dbx = self.dbxt.as_user(team_member_id)
@@ -156,9 +170,8 @@ class DropboxService:
     @staticmethod
     def __get_link_visibility(visibility):
         if visibility.is_shared_folder_only():
-            return "Shared Folder"
+            return "Shared Only"
         elif visibility.is_team_and_password:
-            return "Team and Password"
+            return "Team/Password"
         else:
             return "Others"
-
