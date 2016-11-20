@@ -68,13 +68,13 @@ def list_shared_links(team_member_id):
     return json.dumps(json.loads(jsonpickle.encode(service.list_shared_links(team_member_id))), indent=2)
 
 
-@application.route('/members/<path:team_member_id>/shared-links/<path:url>/_revoke', methods=['DELETE'])
+@application.route('/members/<path:team_member_id>/shared-links/<path:url>', methods=['DELETE'])
 def revoke_shared_link(team_member_id, url):
     service.revoke_shared_link(team_member_id, url)
     return {}
 
 
-@application.route('/members/<path:team_member_id>/shared-folders/<path:shared_folder_id>/_unshare', methods=['GET'])
+@application.route('/members/<path:team_member_id>/shared-folders/<path:shared_folder_id>', methods=['DELETE'])
 def unshare_folder(team_member_id, shared_folder_id):
     service.unshare_folder(team_member_id, shared_folder_id)
     return {}
