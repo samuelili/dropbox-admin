@@ -8,6 +8,7 @@ from flask import json
 from flask import render_template
 from flask import request
 from flask import send_from_directory
+from flask import send_file
 
 import dropbox_service
 
@@ -36,13 +37,13 @@ def pages_json():
 
 @application.route('/')
 def index():
-    return render_template('index.html', pages=pagesJson)
+    return render_template('index.html')
 
 
 # shared link page
-@application.route('/pages/links.html')
+@application.route('/pages/links')
 def link_page():
-    return render_template('links.html', pages=pagesJson)
+    return render_template('links.html')
 
 
 @application.route('/links', methods=['GET'])
@@ -67,6 +68,15 @@ def list_shared_links(team_member_id):
     return json.dumps(json.loads(jsonpickle.encode(service.list_shared_links(team_member_id))), indent=2)
 
 
+@application.route('/pages/members')
+def members_page():
+    return render_template('members.html')
+
+
+# user dashboard page
+@application.route('/pages/dashboard')
+def user_dashboard_page():
+    return render_template('user-dashboard.html')
 
 
 '''
@@ -84,9 +94,9 @@ def login():
 
 
 # read
-@application.route('/items', methods=['GET'])
-def read():
-    return json.dumps(service.list_all())
+# @application.route('/items', methods=['GET'])
+# def read():
+#     return json.dumps(service.list_all())
 
 
 @application.route('/progress', methods=['GET'])
