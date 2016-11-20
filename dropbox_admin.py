@@ -40,16 +40,17 @@ def index():
     return render_template('index.html')
 
 
-# shared link page
-@application.route('/pages/links')
-def link_page():
-    return render_template('links.html')
-
-
-@application.route('/links', methods=['GET'])
+@application.route('/shared-folders', methods=['GET'])
 def list_all_shared_folders():
     force_update = (request.args.get('force-update') == "1")
     result = service.list_all_shared_folders(force_update=force_update)
+    return json.dumps(json.loads(jsonpickle.encode(result)), indent=2)
+
+
+@application.route('/links', methods=['GET'])
+def list_all_shared_links():
+    force_update = (request.args.get('force-update') == "1")
+    result = service.list_all_shared_links(force_update=force_update)
     return json.dumps(json.loads(jsonpickle.encode(result)), indent=2)
 
 
@@ -77,6 +78,18 @@ def members_page():
 @application.route('/pages/dashboard')
 def user_dashboard_page():
     return render_template('user-dashboard.html')
+
+
+# shared link page
+@application.route('/pages/links')
+def link_page():
+    return render_template('links.html')
+
+
+# shared folders page
+@application.route('/pages/shared-folders')
+def shared_folders():
+    return render_template('shared-folders.html')
 
 
 '''
