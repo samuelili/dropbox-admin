@@ -1,0 +1,12 @@
+#members-table > tr {
+    height: 45px;
+}
+
+#members-table th {
+    padding: 0 8px;
+    line-height: 45px;
+}
+
+.edit-button {
+    display: none;
+}

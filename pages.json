@@ -1,9 +1,22 @@
-[{
-  "name": "Shared Links",
-  "description": "View all folders and files that are shared",
-  "link": "/pages/links.html"
-}, {
-  "name": "Status",
-  "description": "View the current status",
-  "link": "#"
-}]
+[
+  {
+    "name": "Shared Folders",
+    "description": "View all shared folders",
+    "link": "/pages/shared-folders"
+  },
+  {
+    "name": "Shared Links",
+    "description": "View all shared links",
+    "link": "/pages/links"
+  },
+  {
+    "name": "Members",
+    "description": "View all Telenav members",
+    "link": "/pages/members"
+  },
+  {
+    "name": "Status",
+    "description": "View the current status",
+    "link": "#"
+  }
+]

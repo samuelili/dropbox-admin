@@ -1,5 +1,7 @@
 body {
     padding-top: 80px;
+    padding-left: 20px;
+    padding-right: 20px;
 }
 
 .navbar-brand img {

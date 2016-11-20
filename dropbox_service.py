@@ -30,8 +30,6 @@ class DropboxService:
                 self.progress["processed"] += 1
                 print self.progress
 
-            members.sort(key=operator.itemgetter('display_name'))
-
             with open(PATH_SHARED_FOLDER_LIST_RESULT, "wb") as output_file:
                 json.dump(json.loads(jsonpickle.encode(members)), output_file)
         else:
@@ -52,6 +50,8 @@ class DropboxService:
                 "team_member_id": dbx_member.profile.team_member_id,
                 "display_name": dbx_member.profile.name.display_name
             })
+
+        members.sort(key=operator.itemgetter('display_name'))
         return members
 
     def list_shared_links(self, team_member_id):

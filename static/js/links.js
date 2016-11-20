@@ -9,23 +9,11 @@ $(function () {
     var $information = $('#information');
     this.$selected = $(); // jquery equivalent null
 
-    String.prototype.format = function (values) {
-        var string = this;
-        for (var key in values)
-            if (values.hasOwnProperty(key)) {
-                var regex = new RegExp("{" + key + "}", "g");
-                string = string.replace(regex, values[key]);
-            }
-
-        return string;
-    };
-
     window.fileElement = '<tr class="file">' +
-        '<th class="user">{user}</th>' +
-        '<th class="path">{path}</th>' +
+        '<th class="user"><a href="/pages/dashboard#{memberId}">{user}</a></th>' +
+        '<th class="path"><a href="{url}">{path}</a></th>' +
         '<th class="access">{access}</th>' +
-        '<th class="url"><a href="{url}" target="_blank">{url}</a></th>' +
-        '<th>{age}</th>' +
+        '<th class="age" style="color: {ageColor}">{age}</th>' +
         '</tr>';
     this.updateContents = function () {
         $.ajax({
@@ -58,6 +46,7 @@ $(function () {
         'access': '',
         'url': '',
         'linkDate': '',
+        'memberId': '',
         'age': ''
     };
     this.fileListeners = function () {
@@ -77,13 +66,19 @@ $(function () {
     this.processFile = function (member, file) {
         var data = {};
 
-        data.user = member.name;
-        data.member_id = member.team_id;
+        data.user = member.display_name;
+        data.memberId = member.team_member_id;
         data.path = file.path;
         data.access = file.access_type;
         data.url = file.preview_url;
         data.linkDate = file.time_invited;
-        data.age = file.days_old + ' days';
+
+        data.age = file.days_old;
+        data.ageColor = 'ForestGreen';
+        if (data.age >= 180)
+            data.ageColor = 'Crimson';
+        else if (data.age >= 90)
+            data.ageColor = 'Coral';
 
         return data;
     };
@@ -93,7 +88,7 @@ $(function () {
         console.log('updated with', info);
 
         $('.user', $information).text(info.user);
-        $('.member_id', $information).text(info.member_id);
+        $('.member_id', $information).text(info.memberId);
         $('.path', $information).text(info.path);
         $('.access', $information).text(info.access);
         $('.url', $information).attr('href', info.url);

@@ -1,0 +1,82 @@
+{% extends "layout.html" %}
+{% block head %}
+    <script src="/js/user-dashboard.js"></script>
+{% endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-12 col-sm-8">
+                <div class="jumbotron">
+                    <h1>John Smith</h1>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-4">
+                <h3>Info</h3>
+                <p><b>ID: </b><span id="team-member-id"></span></p>
+                <p><b>Date Joined: </b><span>1/1/1970</span></p>
+                <p><b>etc... </b><span>more info</span></p>
+            </div>
+        </div>
+        <div class="row">
+
+            {# Pills #}
+            <ul class="nav nav-pills" role="tablist">
+                <li role="presentation" class="active"><a href="#shared" aria-controls="home" role="tab"
+                                                          data-toggle="tab">Shared</a></li>
+                <li role="presentation"><a href="#links" aria-controls="profile" role="tab"
+                                           data-toggle="tab">Links</a></li>
+            </ul>
+
+            {# Tabs #}
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane active" id="shared">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Access Type</th>
+                            <th>Name</th>
+                            <th>Path</th>
+                            <th>Days</th>
+                            <th>Invited</th>
+                            <th>ID</th>
+                        </tr>
+                        </thead>
+                        <tbody id="shared-table"></tbody>
+                    </table>
+                </div>
+                <div role="tabpanel" class="tab-pane" id="links">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Revokable</th>
+                            <th>Name</th>
+                            <th>Expiration</th>
+                            <th>Path</th>
+                            <th>Visibility</th>
+                        </tr>
+                        </thead>
+                        <tbody id="links-table"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" tabindex="-1" role="dialog" id="no-id-modal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Invalid ID</h4>
+                </div>
+                <div class="modal-body">
+                    Invalid ID. Please have a valid ID in the URL.
+                </div>
+                <div class="modal-footer">
+                    <!--suppress HtmlUnknownTarget -->
+                    <a class="btn btn-warning" href="/pages/members">Members</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
