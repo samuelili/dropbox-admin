@@ -27,6 +27,7 @@
         <div class="navbar-header pull-right hidden-xs">
             <div class="navbar-header">
                 <ul class="nav navbar-nav pull-left">
+                    <li><a href="/">Home</a></li>
                     {% for page in pages %}
                         <li><a href="{{ page.link }}">{{ page.name }}</a></li>
                     {% endfor %}
@@ -37,9 +38,11 @@
             <div class="navbar-header">
                 <ul class="nav navbar-nav pull-left">
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle text-right" data-toggle="dropdown" role="button" aria-haspopup="true"
+                        <a href="#" class="dropdown-toggle text-right" data-toggle="dropdown" role="button"
+                           aria-haspopup="true"
                            aria-expanded="false">Pages <span class="caret"></span></a>
                         <ul class="dropdown-menu">
+                            <li><a href="/" class="text-right">Home</a></li>
                             {% for page in pages %}
                                 <li><a href="{{ page.link }}" class="text-right">{{ page.name }}</a></li>
                             {% endfor %}

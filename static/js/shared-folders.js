@@ -10,19 +10,20 @@ $(function () {
     this.$selected = $(); // jquery equivalent null
 
     window.fileElement = '<tr class="file">' +
-        '<th class="user"><a href="/pages/dashboard#{memberId}">{user}</a></th>' +
+        '<th class="user"><a href="/pages/dashboard?name={user}&member-id={memberId}">{user}</a></th>' +
         '<th class="path"><a href="{url}">{path}</a></th>' +
         '<th class="access">{access}</th>' +
         '<th class="age" style="color: {ageColor}">{age}</th>' +
         '</tr>';
-    this.updateContents = function () {
+    this.updateContents = function (forceUpdate) {
         $.ajax({
             dataType: 'json',
-            url: '/shared-folders',
-            success: function(members) {
+            url: '/shared-folders?force-update=' + (forceUpdate ? '1' : '0'),
+            success: function (members) {
                 $files.html('');
+                console.log('Retrieved', members);
+
                 members.forEach(function (member) {
-                    console.log(member);
                     /** @namespace member.shared */
                     member.shared.forEach(function (share) {
                         var $fileElement = $(fileElement.format(obj.processFile(member, share))).data('file', obj.processFile(member, share));
@@ -37,7 +38,9 @@ $(function () {
     };
 
     this.listeners = function () {
-
+        $('#force-refresh').on('click', function() {
+            obj.updateContents(true);
+        });
     };
 
     var emptyInfo = {
@@ -88,7 +91,7 @@ $(function () {
         console.log('updated with', info);
 
         $('.user', $information).text(info.user);
-        $('.member_id', $information).text(info.memberId);
+        $('.memberId', $information).text(info.memberId);
         $('.path', $information).text(info.path);
         $('.access', $information).text(info.access);
         $('.url', $information).attr('href', info.url);
@@ -98,6 +101,6 @@ $(function () {
     };
 
     // run initial methods
-    obj.updateContents();
+    obj.updateContents(false);
     obj.listeners();
 });

@@ -10,18 +10,17 @@ $(function () {
     this.$selected = $(); // jquery equivalent null
 
     var linkHtml = '<tr class="file">' +
-        '<th>{member}</th>' +
-        '<th style="color: {revokeColor}">{revoke}</th>' +
+        '<th><a href="/pages/dashboard?name={member}&member-id={memberId}">{member}</a></th>' +
         '<th>{name}</th>' +
         '<th>{expiration}</th>' +
         '<th><a href="{url}" target="_blank">{path}</a></th>' +
         '<th>{visible}</th></tr>';
-    this.updateContents = function () {
+    this.updateContents = function (forceUpdate) {
 
         $.ajax({
             dataType: 'json',
-            url: '/links',
-            success: function(members) {
+            url: '/links?force-update=' + (forceUpdate ? '1' : '0'),
+            success: function (members) {
                 $links.html('');
                 console.log('Retrieved', members);
 
@@ -38,7 +37,9 @@ $(function () {
     };
 
     this.listeners = function () {
-
+        $('#force-refresh').on('click', function() {
+            obj.updateContents(true);
+        });
     };
 
     var emptyInfo = {
@@ -77,7 +78,7 @@ $(function () {
         data.url = link.url;
 
         data.expiration = link.expires;
-        if(link.expires == null)
+        if (link.expires == null)
             data.expiration = 'Never';
 
         data.visible = link.visibility;
@@ -102,6 +103,6 @@ $(function () {
     };
 
     // run initial methods
-    obj.updateContents();
+    obj.updateContents(false);
     obj.listeners();
 });

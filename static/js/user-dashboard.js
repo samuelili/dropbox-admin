@@ -4,45 +4,45 @@
 
 $(function () {
     var obj = this;
-    this.teamMemberId = window.location.hash.substr(1);
+    this.name = url('?name');
+    this.teamMemberId = url('?member-id');
     var $shared = $('#shared-table');
     var $links = $('#links-table');
 
-    obj.updateContents = function () {
-        if (obj.teamMemberId != "") {
-            console.log('id', obj.teamMemberId);
-            $('#team-member-id').text(obj.teamMemberId);
+    console.log(url('query'));
+    console.log('ID', obj.teamMemberId);
+    console.log('Name', obj.name);
 
-            // get shared
-            $.ajax({
-                'url': '/members/{teamMemberId}/shared-folders'.format({
-                    teamMemberId: obj.teamMemberId
-                }),
-                'method': 'GET',
-                'dataType': 'json',
-                success: function (shared) {
-                    console.log('Retreieved Shared', shared);
+    obj.updateShared = function () {
+        // get shared
+        $.ajax({
+            'url': '/members/{teamMemberId}/shared-folders'.format({
+                teamMemberId: obj.teamMemberId
+            }),
+            'method': 'GET',
+            'dataType': 'json',
+            success: function (shared) {
+                console.log('Retreieved Shared', shared);
 
-                    obj.displayShared(shared);
-                }
-            });
+                obj.displayShared(shared);
+            }
+        });
+    };
 
-            // get links
-            $.ajax({
-                'url': '/members/{teamMemberId}/shared-links'.format({
-                    teamMemberId: obj.teamMemberId
-                }),
-                'method': 'GET',
-                'dataType': 'json',
-                success: function (links) {
-                    console.log('Retreieved Links', links);
+    obj.updateLinks = function () {
+        // get links
+        $.ajax({
+            'url': '/members/{teamMemberId}/shared-links'.format({
+                teamMemberId: obj.teamMemberId
+            }),
+            'method': 'GET',
+            'dataType': 'json',
+            success: function (links) {
+                console.log('Retreieved Links', links);
 
-                    obj.displayLinks(links);
-                }
-            });
-        } else {
-            $('#no-id-modal').modal();
-        }
+                obj.displayLinks(links);
+            }
+        });
     };
 
     var shareHtml = '<tr>' +
@@ -83,8 +83,8 @@ $(function () {
         return data;
     };
 
-    var linksElement = '<tr>' +
-        '<th style="color: {revokeColor}">{revoke}</th>' +
+    var linksElement = '<tr class="link">' +
+        '<th class="revoke-cell"><button class="btn btn-warning btn-xs revoke-link {revoke}">Revoke</button></th>' +
         '<th>{name}</th>' +
         '<th>{expiration}</th>' +
         '<th><a href="{url}" target="_blank">{path}</a></th>' +
@@ -92,20 +92,47 @@ $(function () {
     this.displayLinks = function (links) {
         $links.html(''); // clean
 
-        links.forEach(function(link) {
+        links.forEach(function (link) {
             var $linkElement = $(linksElement.format(obj.processLink(link)));
+
+            $linkElement.hover(function () {
+                $(this).find('.revoke-link').show();
+            }, function () {
+                $(this).find('.revoke-link').hide();
+            });
+
+            $linkElement.find('.revoke-link').on('click', obj.revokeLink).data('url', link.url).data('member-id', obj.teamMemberId);
 
             $links.append($linkElement);
         });
     };
 
-    this.processLink = function(link) {
+    this.revokeLink = function () {
+        if (!$(this).hasClass('disabled')) {
+            var url = $(this).data('url');
+            var memberId = $(this).data('member-id');
+
+            $('#revoke-confirm-modal').modal();
+            $('#confirm-revoke').one('click', function () {
+                $.ajax({
+                    method: 'DELETE',
+                    url: '/members/{memberId}/shared-links/{url}'.format({
+                        url: url,
+                        memberId: memberId
+                    }),
+                    success: function () {
+                        obj.updateLinks();
+                        console.log('Revoke Successful');
+                    }
+                });
+            });
+        }
+    };
+
+    this.processLink = function (link) {
         var data = {};
 
-        data.revoke = link.can_revoke? 'Yes': 'No';
-        data.revokeColor = 'ForestGreen';
-        if (!link.can_revoke)
-            data.revokeColor = 'Crimson';
+        data.revoke = link.can_revoke ? '' : 'disabled';
 
         data.name = link.name;
         data.path = link.path;
@@ -120,5 +147,14 @@ $(function () {
         return data;
     };
 
-    obj.updateContents();
+    if (obj.teamMemberId && obj.name) {
+        $('#member-name').text(obj.name);
+        $('#team-member-id').text(obj.teamMemberId);
+
+        obj.updateShared();
+        obj.updateLinks();
+    }
+    else {
+        $('#no-id-modal').modal();
+    }
 });
