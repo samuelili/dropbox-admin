@@ -45,7 +45,8 @@ $(function () {
         });
     };
 
-    var shareHtml = '<tr>' +
+    var shareHtml = '<tr class="share">' +
+        '<th><button class="btn btn-warning btn-xs unshare">Unshare</button></th>' +
         '<th>{access}</th>' +
         '<th>{name}</th>' +
         '<th><a href="{url}" target="_blank">{path}</a></th>' +
@@ -58,8 +59,38 @@ $(function () {
         shared.forEach(function (share) {
             var $shareElement = $(shareHtml.format(obj.processShared(share)));
 
+            $shareElement.hover(function () {
+                $(this).find('.unshare').show();
+            }, function () {
+                $(this).find('.unshare').hide();
+            });
+
+            $shareElement.find('.unshare').on('click', obj.unshare).data('shared_folder_id', share.shared_folder_id);
+
             $shared.append($shareElement);
         });
+    };
+
+    this.unshare = function () {
+            var sharedFolderId = $(this).data('shared_folder_id');
+            var memberId = obj.teamMemberId;
+
+            $('#confirm-modal').modal();
+            $('#confirm-action').one('click', function () {
+                $.ajax({
+                    method: 'DELETE',
+                    url: '/members/{memberId}/shared-folders/_unshare'.format({
+                        memberId: memberId
+                    }),
+                    headers: {
+                        shared_folder_id: sharedFolderId
+                    },
+                    success: function () {
+                        obj.updateShared();
+                        console.log('Unshare Successful');
+                    }
+                });
+            });
     };
 
     this.processShared = function (share) {
@@ -84,7 +115,7 @@ $(function () {
     };
 
     var linksElement = '<tr class="link">' +
-        '<th class="revoke-cell"><button class="btn btn-warning btn-xs revoke-link {revoke}">Revoke</button></th>' +
+        '<th><button class="btn btn-warning btn-xs revoke-link {revoke}">Revoke</button></th>' +
         '<th>{name}</th>' +
         '<th>{expiration}</th>' +
         '<th><a href="{url}" target="_blank">{path}</a></th>' +
@@ -101,7 +132,7 @@ $(function () {
                 $(this).find('.revoke-link').hide();
             });
 
-            $linkElement.find('.revoke-link').on('click', obj.revokeLink).data('url', link.url).data('member-id', obj.teamMemberId);
+            $linkElement.find('.revoke-link').on('click', obj.revokeLink).data('url', link.url);
 
             $links.append($linkElement);
         });
@@ -110,16 +141,18 @@ $(function () {
     this.revokeLink = function () {
         if (!$(this).hasClass('disabled')) {
             var url = $(this).data('url');
-            var memberId = $(this).data('member-id');
+            var memberId = obj.teamMemberId;
 
-            $('#revoke-confirm-modal').modal();
-            $('#confirm-revoke').one('click', function () {
+            $('#confirm-modal').modal();
+            $('#confirm-action').one('click', function () {
                 $.ajax({
                     method: 'DELETE',
-                    url: '/members/{memberId}/shared-links/{url}'.format({
-                        url: url,
+                    url: '/members/{memberId}/shared-links/_revoke'.format({
                         memberId: memberId
                     }),
+                    headers: {
+                        url: url
+                    },
                     success: function () {
                         obj.updateLinks();
                         console.log('Revoke Successful');
