@@ -14,9 +14,15 @@
 {% block content %}
     <div class="container-fluid">
         <div class="row">
-            <div class="col-xs-2">
+
+            <div class="col-xs-12">
                 <a class="btn btn-primary btn-xs" href="/">
                     <span class="glyphicon glyphicon-chevron-left"></span> Go Back</a>
+
+                <button class="btn btn-danger btn-xs" data-toggle="modal" data-target="#force-refresh-modal">
+                    <span class="glyphicon glyphicon-refresh"></span>
+                    Force Refresh
+                </button>
             </div>
             <div class="col-xs-10">
                 <h1>Shared Links</h1>
@@ -28,9 +34,8 @@
                     <thead>
                     <tr>
                         <th>Member</th>
-                        <th style="width: 80px;">Revokable</th>
                         <th>Name</th>
-                        <th>Expiration</th>
+                        <th style="width: 100px;">Expiration</th>
                         <th>Path</th>
                         <th>Visibility</th>
                     </tr>
@@ -54,6 +59,26 @@
                 <p class="member_id"></p>
                 <p>URL:</p>
                 <a class="url" target="_blank" style="font-weight: normal;"></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" tabindex="-1" role="dialog" id="force-refresh-modal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Force Update</h4>
+                </div>
+                <div class="modal-body">
+                    Force updating can take a long time. Please confirm.
+                </div>
+                <div class="modal-footer">
+                    <a class="btn btn-default" data-dismiss="modal">Cancel</a>
+                    <!--suppress HtmlUnknownTarget -->
+                    <a class="btn btn-danger" href="/pages/members" id="force-refresh" data-dismiss="modal">Confirm</a>
+                </div>
             </div>
         </div>
     </div>

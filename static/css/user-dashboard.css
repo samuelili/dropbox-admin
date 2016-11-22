@@ -1,0 +1,31 @@
+#back-button {
+    margin-bottom: 20px;
+}
+
+.jumbotron {
+    margin-bottom: 15px;
+    background: #333333;
+    color: #ccc;
+
+    padding: 24px 40px !important;;
+}
+
+.jumbotron h1 {
+    font-size: 48px;
+}
+
+#team-member-id {
+    display: inline-block;
+
+    line-height: 100%;
+    word-break: break-all;
+}
+
+.revoke-link {
+    display: none;
+}
+
+.link th {
+    height: 45px;
+    min-height: 45px;
+}

@@ -71,13 +71,13 @@ def list_shared_links(team_member_id):
 @application.route('/members/<path:team_member_id>/shared-links/<path:url>', methods=['DELETE'])
 def revoke_shared_link(team_member_id, url):
     service.revoke_shared_link(team_member_id, url)
-    return {}
+    return '{}'
 
 
 @application.route('/members/<path:team_member_id>/shared-folders/<path:shared_folder_id>', methods=['DELETE'])
 def unshare_folder(team_member_id, shared_folder_id):
     service.unshare_folder(team_member_id, shared_folder_id)
-    return {}
+    return '{}'
 
 
 @application.route('/pages/members')

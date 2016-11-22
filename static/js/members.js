@@ -7,11 +7,11 @@ $(function () {
     this.$selected = $();
 
     var memberHtml = '<tr>' +
-        '<th>{name}</th>' +
         '<th>' +
-        '<a class="btn btn-primary btn-xs edit-button" href="/pages/dashboard#{id}">' +
+        '<a class="btn btn-primary btn-xs edit-button" href="/pages/dashboard?name={name}&member-id={id}">' +
         '<span class="glyphicon glyphicon-pencil"></span> Edit' +
         '</a></th>' +
+        '<th>{name}</th>' +
         '</tr>';
     obj.updateContents = function () {
         $.ajax({

@@ -1,21 +1,32 @@
 {% extends "layout.html" %}
 {% block head %}
+    <link rel="stylesheet" href="/css/user-dashboard.css">
+
+    <script src="/js/url.min.js"></script>
     <script src="/js/user-dashboard.js"></script>
 {% endblock %}
 
 {% block content %}
     <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-xs-2">
+                <!--suppress HtmlUnknownTarget -->
+                <button class="btn btn-primary btn-xs" onclick="history.back();" id="back-button">
+                    <span class="glyphicon glyphicon-chevron-left"></span> Go Back
+                </button>
+            </div>
+        </div>
+
         <div class="row">
             <div class="col-xs-12 col-sm-8">
                 <div class="jumbotron">
-                    <h1>John Smith</h1>
+                    <h1 id="member-name"></h1>
                 </div>
             </div>
             <div class="col-xs-12 col-sm-4">
-                <h3>Info</h3>
-                <p><b>ID: </b><span id="team-member-id"></span></p>
-                <p><b>Date Joined: </b><span>1/1/1970</span></p>
-                <p><b>etc... </b><span>more info</span></p>
+                <h3><b>ID:</b></h3>
+                <p id="team-member-id"></p>
             </div>
         </div>
         <div class="row">
@@ -49,7 +60,7 @@
                     <table class="table">
                         <thead>
                         <tr>
-                            <th>Revokable</th>
+                            <th style="width: 80px;"></th>
                             <th>Name</th>
                             <th>Expiration</th>
                             <th>Path</th>
@@ -75,6 +86,22 @@
                 <div class="modal-footer">
                     <!--suppress HtmlUnknownTarget -->
                     <a class="btn btn-warning" href="/pages/members">Members</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" tabindex="-1" role="dialog" id="revoke-confirm-modal">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Confirm Revoke</h4>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button class="btn btn-warning" data-dismiss="modal" id="confirm-revoke">Confirm</button>
                 </div>
             </div>
         </div>
