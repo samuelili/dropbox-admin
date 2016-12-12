@@ -21,11 +21,11 @@
     word-break: break-all;
 }
 
-.revoke-link {
+.revoke-link, .unshare {
     display: none;
 }
 
-.link th {
+.link th, .share th {
     height: 45px;
     min-height: 45px;
 }
