@@ -1,3 +1,4 @@
+import csv
 import json
 import os
 from datetime import datetime
@@ -7,9 +8,16 @@ import jsonpickle
 import operator
 
 PATH_SHARED_FOLDERS_LIST_RESULT = "/tmp/dropbox_list_shared_folders_result.json"
+PATH_SHARED_FOLDERS_LIST_RESULT_CSV = "/tmp/dropbox_list_shared_folders_result.csv"
 PATH_SHARED_LINKS_RESULT = "/tmp/dropbox_list_shared_links_result.json"
+PATH_SHARED_LINKS_RESULT_CSV = "/tmp/dropbox_list_shared_links_result.csv"
+
+SHARED_LINKS_KEYS = {
+    ""
+}
 
 
+# noinspection PyTypeChecker
 class DropboxService:
     def __init__(self, token=None):
         self.dbxt = dropbox.DropboxTeam(token)
@@ -35,6 +43,12 @@ class DropboxService:
 
             with open(PATH_SHARED_LINKS_RESULT, "wb") as output_file:
                 json.dump(json.loads(jsonpickle.encode(members)), output_file)
+
+            with open(PATH_SHARED_LINKS_RESULT_CSV, "wb") as csv_file:
+                keys = members[0].keys()
+                dict_writer = csv.DictWriter(csv_file, keys)
+                dict_writer.writeheader()
+                dict_writer.writerows(members)
         else:
             with open(PATH_SHARED_LINKS_RESULT, "r") as f:
                 members = json.load(f)
@@ -59,6 +73,23 @@ class DropboxService:
 
             with open(PATH_SHARED_FOLDERS_LIST_RESULT, "wb") as output_file:
                 json.dump(json.loads(jsonpickle.encode(members)), output_file)
+
+            with open(PATH_SHARED_FOLDERS_LIST_RESULT_CSV, "wb") as csv_file:
+                writer = csv.writer(csv_file)
+                for member in members:
+                    for share in member['shared']:
+                        row = [member['team_member_id'],
+                               member['display_name'],
+                               member['account_id'],
+                               share['days_old'],
+                               share['name'],
+                               share['time_invited'],
+                               share['preview_url'],
+                               share['access_type'],
+                               share['shared_folder_id'],
+                               share['path']
+                               ]
+                        writer.writerow(row)
         else:
             with open(PATH_SHARED_FOLDERS_LIST_RESULT, "r") as f:
                 members = json.load(f)
@@ -175,3 +206,6 @@ class DropboxService:
             return "Team/Password"
         else:
             return "Others"
+
+    def __write_csv(self):
+        pass
