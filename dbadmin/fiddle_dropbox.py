@@ -1,6 +1,6 @@
-from dropbox import files, dropbox
+from dropbox import dropbox
 
-import dropbox_service
+import dbadmin_service
 
 with open('token.txt', 'r')as f:
     global token
@@ -8,6 +8,6 @@ with open('token.txt', 'r')as f:
 
 dbx = dropbox.Dropbox(token)
 
-service = dropbox_service.DropboxService(token)
+service = dbadmin_service.DropboxService(token)
 
 print(service.list_all_shared_folders())
