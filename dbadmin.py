@@ -9,23 +9,9 @@ from flask import render_template
 from flask import request
 from flask import send_from_directory
 
-import dropbox_service
-
-SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
+import dbadmin.dbadmin_service
 
 application = Flask(__name__)
-
-application.secret_key = os.urandom(24)
-
-try:
-    with open('token.yaml', 'r') as token_file:
-        config = yaml.load(token_file)
-    with open('pages.json', 'r') as f:
-        pagesJson = jsonpickle.decode(f.read())
-    service = dropbox_service.DropboxService(token=config['dropbox-token'])
-
-except IOError:
-    logging.error("Error reading token.yaml. Please make sure the token.yaml file is properly configured.")
 
 
 # define contextual processes.
@@ -133,4 +119,17 @@ def send_js(path):
 
 
 if __name__ == '__main__':
+    SCRIPT_PATH = os.path.dirname(os.path.realpath(__file__))
+    application.secret_key = os.urandom(24)
+
+    try:
+        with open('token.yaml', 'r') as token_file:
+            config = yaml.load(token_file)
+        with open('pages.json', 'r') as f:
+            pagesJson = jsonpickle.decode(f.read())
+        service = dbadmin.dbadmin_service.DropboxService(token=config['dropbox-token'])
+
+    except IOError:
+        logging.error("Error reading token.yaml. Please make sure the token.yaml file is properly configured.")
+
     application.run(host='0.0.0.0', debug=True)

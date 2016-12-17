@@ -12,10 +12,6 @@ PATH_SHARED_FOLDERS_LIST_RESULT_CSV = "/tmp/dropbox_list_shared_folders_result.c
 PATH_SHARED_LINKS_RESULT = "/tmp/dropbox_list_shared_links_result.json"
 PATH_SHARED_LINKS_RESULT_CSV = "/tmp/dropbox_list_shared_links_result.csv"
 
-SHARED_LINKS_KEYS = {
-    ""
-}
-
 
 # noinspection PyTypeChecker
 class DropboxService:
@@ -41,14 +37,7 @@ class DropboxService:
 
             members.sort(key=operator.itemgetter('display_name'))
 
-            with open(PATH_SHARED_LINKS_RESULT, "wb") as output_file:
-                json.dump(json.loads(jsonpickle.encode(members)), output_file)
-
-            with open(PATH_SHARED_LINKS_RESULT_CSV, "wb") as csv_file:
-                keys = members[0].keys()
-                dict_writer = csv.DictWriter(csv_file, keys)
-                dict_writer.writeheader()
-                dict_writer.writerows(members)
+            self.save_links_to_cache(members)
         else:
             with open(PATH_SHARED_LINKS_RESULT, "r") as f:
                 members = json.load(f)
@@ -71,30 +60,71 @@ class DropboxService:
                 self.progress["processed"] += 1
                 print self.progress
 
-            with open(PATH_SHARED_FOLDERS_LIST_RESULT, "wb") as output_file:
-                json.dump(json.loads(jsonpickle.encode(members)), output_file)
-
-            with open(PATH_SHARED_FOLDERS_LIST_RESULT_CSV, "wb") as csv_file:
-                writer = csv.writer(csv_file)
-                for member in members:
-                    for share in member['shared']:
-                        row = [member['team_member_id'],
-                               member['display_name'],
-                               member['account_id'],
-                               share['days_old'],
-                               share['name'],
-                               share['time_invited'],
-                               share['preview_url'],
-                               share['access_type'],
-                               share['shared_folder_id'],
-                               share['path']
-                               ]
-                        writer.writerow(row)
+            self.save_shared_folder_to_cache()
         else:
             with open(PATH_SHARED_FOLDERS_LIST_RESULT, "r") as f:
                 members = json.load(f)
 
         return members
+
+    @staticmethod
+    def save_shared_folder_to_cache(members):
+        # Save to JSON
+        with open(PATH_SHARED_FOLDERS_LIST_RESULT, "wb") as output_file:
+            json.dump(json.loads(jsonpickle.encode(members)), output_file)
+
+        # Save to CSV
+        with open(PATH_SHARED_FOLDERS_LIST_RESULT_CSV, "wb") as csv_file:
+            writer = csv.writer(csv_file)
+            writer.writerow(
+                ["Username", "User ID", "Account ID", "Days Old", "Name", "Time Invited", "Preview URL", "Access Type",
+                 "Shared Folder Id", "Path"])
+            for member in members:
+                for share in member['shared']:
+                    row = [member['display_name'],
+                           member['team_member_id'],
+                           member['account_id'],
+                           share['days_old'],
+                           share['name'],
+                           share['time_invited'],
+                           share['preview_url'],
+                           share['access_type'],
+                           share['shared_folder_id'],
+                           share['path']
+                           ]
+                    writer.writerow([unicode(s).encode("utf-8") for s in row])
+
+    @staticmethod
+    def save_links_to_cache(members):
+        # Save to JSON
+        with open(PATH_SHARED_LINKS_RESULT, "wb") as output_file:
+            json.dump(json.loads(jsonpickle.encode(members)), output_file)
+
+        # Save to CSV
+        with open(PATH_SHARED_LINKS_RESULT_CSV, "wb") as csv_file:
+            writer = csv.writer(csv_file)
+            writer.writerow(
+                ["Username", "User ID", "Account ID", "Revokable", "URL", "Expires", "Visibility", "Path", "Name",
+                 "Id"])
+            for member in members:
+                for link in member['links']:
+                    row = [member['display_name'],
+                           member['team_member_id'],
+                           member['account_id'],
+                           link['can_revoke'],
+                           link['url'],
+                           link['expires'],
+                           link['visibility'],
+                           link['path'],
+                           link['name'],
+                           link['id']
+                           ]
+                    writer.writerow([unicode(s).encode("utf-8") for s in row])
+
+            keys = members[0].keys()
+            dict_writer = csv.DictWriter(csv_file, keys)
+            dict_writer.writeheader()
+            dict_writer.writerows(members)
 
     def list_team_members(self):
         """
@@ -209,3 +239,17 @@ class DropboxService:
 
     def __write_csv(self):
         pass
+
+
+# def main():
+#     with open(PATH_SHARED_FOLDERS_LIST_RESULT, "r") as f:
+#         members = json.load(f)
+#         DropboxService.save_shared_folder_to_cache(members)
+#
+#     with open(PATH_SHARED_LINKS_RESULT, "r") as f:
+#         members = json.load(f)
+#         DropboxService.save_links_to_cache(members)
+
+
+if __name__ == '__main__':
+    main()
