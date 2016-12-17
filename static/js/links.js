@@ -7,6 +7,7 @@ $(function () {
     var $filesTable = $('#files-table');
     var $links = $('#links');
     var $information = $('#information');
+    var $loading = $('#loading-screen');
     this.$selected = $(); // jquery equivalent null
 
     var linkHtml = '<tr class="file">' +
@@ -16,6 +17,8 @@ $(function () {
         '<th><a href="{url}" target="_blank">{path}</a></th>' +
         '<th>{visible}</th></tr>';
     this.updateContents = function (forceUpdate) {
+        $filesTable.hide();
+        $loading.show();
 
         $.ajax({
             dataType: 'json',
@@ -24,20 +27,22 @@ $(function () {
                 $links.html('');
                 console.log('Retrieved', members);
 
-                $filesTable.show(); // reveal files after load
                 members.forEach(function (member) {
                     member.links.forEach(function (link) {
                         var $linkElement = $(linkHtml.format(obj.processLink(member, link))).data('link', obj.processLink(member, link));
                         $links.append($linkElement);
                     });
                 });
+                $loading.hide();
+                $filesTable.show(); // reveal files after load
+
                 obj.linkListeners();
             }
         })
     };
 
     this.listeners = function () {
-        $('#force-refresh').on('click', function() {
+        $('#force-refresh').on('click', function () {
             obj.updateContents(true);
         });
     };
@@ -103,6 +108,11 @@ $(function () {
     };
 
     // run initial methods
-    obj.updateContents(false);
+    if (!$loading[0].complete)
+        $('#loading-gear', $loading).on('load', function () {
+            obj.updateContents(false);
+        });
+    else
+        obj.updateContents(false);
     obj.listeners();
 });

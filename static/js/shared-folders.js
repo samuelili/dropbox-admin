@@ -7,6 +7,7 @@ $(function () {
     var $filesTable = $('#files-table');
     var $files = $('#files');
     var $information = $('#information');
+    var $loading = $('#loading-screen');
     this.$selected = $(); // jquery equivalent null
 
     window.fileElement = '<tr class="file">' +
@@ -16,13 +17,14 @@ $(function () {
         '<th class="age" style="color: {ageColor}">{age}</th>' +
         '</tr>';
     this.updateContents = function (forceUpdate) {
+        $filesTable.hide();
+        $loading.show();
         $.ajax({
             dataType: 'json',
             url: '/shared-folders?force-update=' + (forceUpdate ? '1' : '0'),
             success: function (members) {
                 $files.html('');
                 console.log('Retrieved', members);
-
                 members.forEach(function (member) {
                     /** @namespace member.shared */
                     member.shared.forEach(function (share) {
@@ -31,6 +33,7 @@ $(function () {
                     });
                 });
 
+                $loading.hide();
                 $filesTable.show(); // reveal files after load
                 obj.fileListeners();
             }
@@ -38,7 +41,7 @@ $(function () {
     };
 
     this.listeners = function () {
-        $('#force-refresh').on('click', function() {
+        $('#force-refresh').on('click', function () {
             obj.updateContents(true);
         });
     };
@@ -101,6 +104,11 @@ $(function () {
     };
 
     // run initial methods
-    obj.updateContents(false);
+    if (!$loading[0].complete)
+        $('#loading-gear', $loading).on('load', function () {
+            obj.updateContents(false);
+        });
+    else
+        obj.updateContents(false);
     obj.listeners();
 });
